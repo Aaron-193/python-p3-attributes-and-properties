@@ -4,6 +4,7 @@ from person import Person
 
 import io
 import sys
+import pytest
 
 class TestPerson:
     '''Person in person.py'''
@@ -12,14 +13,11 @@ class TestPerson:
         '''is a class with the name "Person".'''
         guido = Person(name='Guido', job='Sales')
         assert(type(guido) == Person)
-        
-    def test_name_not_empty(self):
-        '''prints "Name must be string between 1 and 25 characters." if empty string.'''
-        captured_out = io.StringIO()
-        sys.stdout = captured_out
-        Person(name="", job="Sales")
-        sys.stdout = sys.__stdout__
-        assert(captured_out.getvalue() == "Name must be string between 1 and 25 characters.\n")
+
+def test_name_not_empty(capsys):
+    Person(name="", job="Sales")  # This should trigger the validation message
+    captured = capsys.readouterr()  # Capture the output
+    assert captured.out == "Name must be string between 1 and 25 characters.\n"
 
     def test_name_string(self):
         '''prints "Name must be string between 1 and 25 characters." if not string.'''
